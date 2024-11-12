@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.Wander" parent="Base.Theme.Wander" />
+
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">#FFFFFF</item>
+    </style>
 </resources>
