@@ -1,6 +1,7 @@
 package com.example.wander
 
 import android.content.res.Resources
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.wander.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.GroundOverlayOptions
 import com.google.android.gms.maps.model.MapStyleOptions
 import java.util.Locale
 
@@ -50,9 +52,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
+        val overlaySize = 100f
         //These coordinates represent the latitude and longitude of the Googleplex.
-        val latitude =  -19.95753
+        val latitude = -19.95753
         val longitude = -43.9146
         val zoomLevel = 15f
 
@@ -60,6 +62,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_android)
+
+        if (bitmap != null) {
+            // Create a BitmapDescriptor from the Bitmap
+            val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
+
+            // Use the BitmapDescriptor for the GroundOverlay
+            val androidOverlay = GroundOverlayOptions()
+                .image(bitmapDescriptor)
+                .position(homeLatLng, overlaySize)
+
+            map.addGroundOverlay(androidOverlay)
+        } else {
+            Log.e(TAG, "Failed to decode the image resource: R.drawable.ic_android")
+        }
 
         setPoiClick(map)
         setMapLongClick(map)
@@ -79,18 +96,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
         }
+
         R.id.hybrid_map -> {
             map.mapType = GoogleMap.MAP_TYPE_HYBRID
             true
         }
+
         R.id.satellite_map -> {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
             true
         }
+
         R.id.terrain_map -> {
             map.mapType = GoogleMap.MAP_TYPE_TERRAIN
             true
         }
+
         else -> super.onOptionsItemSelected(item)
     }
 
