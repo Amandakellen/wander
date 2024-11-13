@@ -59,7 +59,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //These coordinates represent the latitude and longitude of the Googleplex.
         val latitude = -19.95753
         val longitude = -43.9146
-        val zoomLevel = 15f
+        val zoomLevel = 18f
 
         val homeLatLng = LatLng(latitude, longitude)
 
