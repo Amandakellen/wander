@@ -1,7 +1,11 @@
 package com.example.wander
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -52,7 +56,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        val overlaySize = 100f
         //These coordinates represent the latitude and longitude of the Googleplex.
         val latitude = -19.95753
         val longitude = -43.9146
@@ -62,22 +65,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_android)
 
-        if (bitmap != null) {
-            // Create a BitmapDescriptor from the Bitmap
-            val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
 
-            // Use the BitmapDescriptor for the GroundOverlay
-            val androidOverlay = GroundOverlayOptions()
-                .image(bitmapDescriptor)
-                .position(homeLatLng, overlaySize)
-
-            map.addGroundOverlay(androidOverlay)
-        } else {
-            Log.e(TAG, "Failed to decode the image resource: R.drawable.ic_android")
-        }
-
+        addOverlay(map, homeLatLng)
         setPoiClick(map)
         setMapLongClick(map)
         setMapStyle(map)
@@ -163,5 +153,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         } catch (e: Resources.NotFoundException) {
             Log.e(TAG, "Can't find style. Error: ", e)
         }
+    }
+
+    private fun addOverlay(map: GoogleMap, homeLatLng: LatLng){
+        val overlaySize = 100f
+
+        // Cria um Bitmap vazio
+        val bitmapSize = 100 // Tamanho do bitmap em pixels
+        val bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Configurações do círculo
+        val paint = Paint().apply {
+            color = Color.MAGENTA // Cor do círculo
+            isAntiAlias = true // Suaviza as bordas do círculo
+        }
+
+        // Desenha um círculo no centro do Bitmap
+        val radius = bitmapSize / 2f
+        canvas.drawCircle(radius, radius, radius, paint)
+
+        // Usa o Bitmap criado para o GroundOverlay
+        val androidOverlay = GroundOverlayOptions()
+            .image(BitmapDescriptorFactory.fromBitmap(bitmap)) // Usa o Bitmap criado aqui
+            .position(homeLatLng, overlaySize)
+
+        map.addGroundOverlay(androidOverlay)
     }
 }
